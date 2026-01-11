@@ -5,7 +5,8 @@ public class Category
 {
     public int Id { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Nazwa kategori jest wymagana")]
+    [StringLength(200, ErrorMessage = "Nazwa ketegori nie może mieć więcej niż 200 znaków")]
     public string Name { get; set; }
 
     // 1 → N

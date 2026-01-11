@@ -3,13 +3,13 @@
 services:
   web:
     build: .
-    container_name: videogamestore_web
+    container_name: gamestore_web
     ports:
       - "8080:80"
     depends_on:
       - db
     environment:
-      - ConnectionStrings__DefaultConnection=Server=db;Database=VideoGameStoreDb;User=sa;Password=StrongPassword123!;TrustServerCertificate=True
+      - ConnectionStrings__DefaultConnection=Server=db;Database=GameStoreDb;User=sa;Password=Password123!;TrustServerCertificate=True
 
   db:
     image: mcr.microsoft.com/mssql/server:2022-latest

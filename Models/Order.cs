@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 public class Order
 {
@@ -9,8 +11,19 @@ public class Order
 
     public DateTime OrderDate { get; set; }
 
-    public string Status { get; set; }
+    [DefaultValue("New")]
+    public Status status { get; set; }
 
     // 1 → N
     public ICollection<OrderItem> OrderItems { get; set; }
+
+    public enum Status
+    {
+        New,
+        PaymentReceived,
+        PaymentSuceeded,
+        PaymentRejected,
+        InProgress,
+        Sent,
+    }
 }
