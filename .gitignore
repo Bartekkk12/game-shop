@@ -1,0 +1,14 @@
+﻿## Visual Studio
+.vs/
+bin/
+obj/
+
+## ASP.NET
+appsettings.Development.json
+
+## Docker
+**/Dockerfile*
+docker-compose.override.yml
+
+## OS
+.DS_Store
