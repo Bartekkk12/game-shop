@@ -1,0 +1,48 @@
+﻿version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: gameshop-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong@Passw0rd
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - gameshop-network
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P YourStrong@Passw0rd -Q "SELECT 1" -C || exit 1
+      interval: 10s
+      retries: 10
+      start_period: 10s
+      timeout: 3s
+
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gameshop-webapp
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=GameShopDB;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True
+    ports:
+      - "5000:8080"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    volumes:
+      - data-protection:/app/DataProtection-Keys
+    networks:
+      - gameshop-network
+
+volumes:
+  sqlserver-data:
+  data-protection:
+
+networks:
+  gameshop-network:
+    driver: bridge

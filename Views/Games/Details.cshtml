@@ -1,0 +1,42 @@
+﻿@model Game
+
+@{
+    ViewData["Title"] = "Game Details";
+}
+
+<h2>Game Details</h2>
+
+<div>
+    <h4>Game</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Title</dt>
+        <dd class="col-sm-10">@Model.Title</dd>
+
+        <dt class="col-sm-2">Description</dt>
+        <dd class="col-sm-10">@Model.Description</dd>
+
+        <dt class="col-sm-2">Price</dt>
+        <dd class="col-sm-10">@Model.Price.ToString("C")</dd>
+
+        <dt class="col-sm-2">Release Date</dt>
+        <dd class="col-sm-10">@Model.ReleaseDate.ToString("yyyy-MM-dd")</dd>
+
+        <dt class="col-sm-2">Stock</dt>
+        <dd class="col-sm-10">@Model.Stock</dd>
+
+        <dt class="col-sm-2">Category</dt>
+        <dd class="col-sm-10">@Model.Category?.Name</dd>
+
+        <dt class="col-sm-2">Publisher</dt>
+        <dd class="col-sm-10">@Model.Publisher?.Name</dd>
+
+        <dt class="col-sm-2">Platform</dt>
+        <dd class="col-sm-10">@Model.GamePlatform</dd>
+    </dl>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>

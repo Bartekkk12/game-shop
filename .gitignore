@@ -1,0 +1,13 @@
+﻿# .NET Files
+bin/
+obj/
+*.user
+*.suo
+*.db
+.DS_Store
+
+# Visual Studio-specific files
+.vs/
+
+# Build artifacts and logs
+*.log

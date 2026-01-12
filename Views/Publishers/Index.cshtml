@@ -1,0 +1,31 @@
+﻿@model IEnumerable<Publisher>
+
+@{
+    ViewData["Title"] = "Publishers";
+}
+
+<h2>Publishers</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var publisher in Model)
+        {
+            <tr>
+                <td>@publisher.Name</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@publisher.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@publisher.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@publisher.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a class="btn btn-primary" asp-action="Create">Add New Publisher</a>
