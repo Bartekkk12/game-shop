@@ -1,13 +1,11 @@
-﻿version: "3.9"
-
-services:
+﻿services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: gameshop-sqlserver
     environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=YourStrong@Passw0rd
-      - MSSQL_PID=Express
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "YourStrong@Passw0rd"
+      MSSQL_PID: "Express"
     ports:
       - "1433:1433"
     volumes:
@@ -15,21 +13,33 @@ services:
     networks:
       - gameshop-network
     healthcheck:
-      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P YourStrong@Passw0rd -Q "SELECT 1" -C || exit 1
+      test: >
+        /opt/mssql-tools18/bin/sqlcmd
+        -S localhost
+        -U sa
+        -P YourStrong@Passw0rd
+        -Q "SELECT 1"
+        -C
       interval: 10s
+      timeout: 5s
       retries: 10
-      start_period: 10s
-      timeout: 3s
 
   webapp:
+    image: gameshop-webapp
     build:
       context: .
       dockerfile: Dockerfile
     container_name: gameshop-webapp
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=8080
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=GameShopDB;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;MultipleActiveResultSets=true
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
+      ConnectionStrings__DefaultConnection: >
+        Server=sqlserver;
+        Database=GameShopDB;
+        User Id=sa;
+        Password=YourStrong@Passw0rd;
+        TrustServerCertificate=True;
+        MultipleActiveResultSets=true
     ports:
       - "5000:8080"
     depends_on:
