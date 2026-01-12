@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 public class GamesController : Controller
 {
@@ -53,6 +54,7 @@ public class GamesController : Controller
     }
 
     // GET: Games/Create
+    [Authorize(Roles = "Admin")]
     public IActionResult Create()
     {
         ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
@@ -62,21 +64,34 @@ public class GamesController : Controller
 
     // POST: Games/Create
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Game game)
     {
+        // Usuń błędy walidacji dla właściwości nawigacyjnych
+        ModelState.Remove("Category");
+        ModelState.Remove("Publisher");
+
         if (!ModelState.IsValid)
         {
+            Console.WriteLine("Model state is invalid:");
+            foreach (var error in ModelState)
+            {
+                Console.WriteLine($"Key: {error.Key}, Errors: {string.Join(", ", error.Value.Errors.Select(e => e.ErrorMessage))}");
+            }
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", game.CategoryId);
             ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", game.PublisherId);
             return View(game);
         }
 
+        Console.WriteLine($"Dodawanie gry: {game.Title}, CategoryId: {game.CategoryId}, PublisherId: {game.PublisherId}, Platform: {game.GamePlatform}");
         _context.Add(game);
         await _context.SaveChangesAsync();
+        Console.WriteLine($"Gra {game.Title} została dodana z ID: {game.Id}");
         return RedirectToAction(nameof(Index));
     }
 
+    [Authorize(Roles = "Admin")]
     // GET: Games/Edit/5
     public async Task<IActionResult> Edit(int? id)
     {
@@ -99,6 +114,7 @@ public class GamesController : Controller
     }
 
     // POST: Games/Edit/5
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, Game game)
@@ -107,6 +123,10 @@ public class GamesController : Controller
         {
             return NotFound(); // ID dla gry się nie pokrywa
         }
+
+        // Usuń błędy walidacji dla właściwości nawigacyjnych
+        ModelState.Remove("Category");
+        ModelState.Remove("Publisher");
 
         if (ModelState.IsValid)
         {
@@ -137,7 +157,8 @@ public class GamesController : Controller
 
         return View(game);
     }
-
+[Authorize(Roles = "Admin")]
+    
     // GET: Games/Delete/5
     public async Task<IActionResult> Delete(int? id)
     {
@@ -159,6 +180,7 @@ public class GamesController : Controller
         return View(game);
     }
 
+    [Authorize(Roles = "Admin")]
     // POST: Games/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]

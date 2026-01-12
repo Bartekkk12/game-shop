@@ -1,0 +1,14 @@
+@{
+    ViewData["Title"] = "Dostęp zabroniony";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="alert alert-danger">
+            <h2>Dostęp zabroniony</h2>
+            <p>Nie masz uprawnień do wyświetlenia tej strony.</p>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Zaloguj się</a>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Powrót do strony głównej</a>
+        </div>
+    </div>
+</div>

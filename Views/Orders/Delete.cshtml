@@ -1,0 +1,107 @@
+@model Order
+
+@{
+    ViewData["Title"] = "Usuń zamówienie";
+}
+
+<h2>Usuń zamówienie</h2>
+
+<div class="alert alert-danger">
+    <h4>Czy na pewno chcesz usunąć to zamówienie?</h4>
+    <p>Ta operacja jest nieodwracalna!</p>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h4>Szczegóły zamówienia #@Model.Id</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">ID zamówienia:</dt>
+            <dd class="col-sm-9">@Model.Id</dd>
+
+            <dt class="col-sm-3">Użytkownik:</dt>
+            <dd class="col-sm-9">@(Model.User?.Email ?? Model.UserId ?? "Gość")</dd>
+
+            <dt class="col-sm-3">Data zamówienia:</dt>
+            <dd class="col-sm-9">@Model.OrderDate.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+
+            <dt class="col-sm-3">Status:</dt>
+            <dd class="col-sm-9">
+                <span class="badge bg-@GetStatusBadgeColor(Model.status)">
+                    @GetStatusDisplayName(Model.status)
+                </span>
+            </dd>
+
+            <dt class="col-sm-3">Wartość całkowita:</dt>
+            <dd class="col-sm-9">
+                <strong>@Model.OrderItems.Sum(oi => oi.Price * oi.Quantity).ToString("C")</strong>
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h4>Pozycje zamówienia do usunięcia</h4>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Gra</th>
+                    <th>Cena jednostkowa</th>
+                    <th>Ilość</th>
+                    <th>Wartość</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderItems)
+                {
+                    <tr>
+                        <td>@item.Game.Title</td>
+                        <td>@item.Price.ToString("C")</td>
+                        <td>@item.Quantity</td>
+                        <td>@((item.Price * item.Quantity).ToString("C"))</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-danger">Tak, usuń zamówienie</button>
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Nie, anuluj</a>
+</form>
+
+@functions {
+    string GetStatusBadgeColor(Order.Status status)
+    {
+        return status switch
+        {
+            Order.Status.New => "secondary",
+            Order.Status.PaymentReceived => "info",
+            Order.Status.PaymentSuceeded => "success",
+            Order.Status.PaymentRejected => "danger",
+            Order.Status.InProgress => "warning",
+            Order.Status.Sent => "primary",
+            _ => "secondary"
+        };
+    }
+
+    string GetStatusDisplayName(Order.Status status)
+    {
+        return status switch
+        {
+            Order.Status.New => "Nowe",
+            Order.Status.PaymentReceived => "Otrzymano płatność",
+            Order.Status.PaymentSuceeded => "Płatność zakończona",
+            Order.Status.PaymentRejected => "Płatność odrzucona",
+            Order.Status.InProgress => "W trakcie",
+            Order.Status.Sent => "Wysłane",
+            _ => status.ToString()
+        };
+    }
+}

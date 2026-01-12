@@ -35,8 +35,8 @@ public class Game
     public int PublisherId { get; set; }
 
     // Navigation
-    public Category Category { get; set; } = null!;
-    public Publisher Publisher { get; set; } = null!;
+    public Category? Category { get; set; }
+    public Publisher? Publisher { get; set; }
 
     [Required(ErrorMessage = "Platforma gry jest wymagana")]
     public Platform GamePlatform { get; set; }

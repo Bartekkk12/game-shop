@@ -1,0 +1,95 @@
+@{
+    ViewData["Title"] = "Nowe zamówienie";
+    var games = ViewBag.Games as List<Game>;
+}
+
+<h2>Nowe zamówienie</h2>
+
+<form asp-action="Create" method="post">
+    <div class="card">
+        <div class="card-header">
+            <h4>Wybierz gry</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Wybierz</th>
+                        <th>Tytuł</th>
+                        <th>Kategoria</th>
+                        <th>Wydawca</th>
+                        <th>Cena</th>
+                        <th>Stan magazynowy</th>
+                        <th>Ilość</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (games != null && games.Any())
+                    {
+                        @foreach (var game in games)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="checkbox" 
+                                           class="form-check-input game-checkbox" 
+                                           name="gameIds" 
+                                           value="@game.Id" 
+                                           data-game-id="@game.Id" />
+                                </td>
+                                <td>@game.Title</td>
+                                <td>@game.Category?.Name</td>
+                                <td>@game.Publisher?.Name</td>
+                                <td>@game.Price.ToString("C")</td>
+                                <td>@game.Stock</td>
+                                <td>
+                                    <input type="number" 
+                                           name="quantities" 
+                                           class="form-control form-control-sm quantity-input" 
+                                           value="1" 
+                                           min="1" 
+                                           max="@game.Stock" 
+                                           style="width: 80px;"
+                                           data-game-id="@game.Id"
+                                           disabled />
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center">Brak dostępnych gier w magazynie</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <button type="submit" class="btn btn-primary">Utwórz zamówienie</button>
+        <a asp-action="Index" class="btn btn-secondary">Anuluj</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.querySelectorAll('.game-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const gameId = this.getAttribute('data-game-id');
+                    const quantityInput = document.querySelector(`.quantity-input[data-game-id="${gameId}"]`);
+                    
+                    if (quantityInput) {
+                        quantityInput.disabled = !this.checked;
+                        if (!this.checked) {
+                            quantityInput.value = 1;
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

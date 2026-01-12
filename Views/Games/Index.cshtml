@@ -4,17 +4,25 @@
     ViewData["Title"] = "Games";
 }
 
-<h2>Games</h2>
+<h2>Gry</h2>
 
-<table class="table">
+@if (User.IsInRole("Admin"))
+{
+    <p>
+        <a class="btn btn-primary" asp-action="Create">Dodaj nową grę</a>
+    </p>
+}
+
+<table class="table table-striped">
     <thead>
         <tr>
-            <th>Title</th>
-            <th>Category</th>
-            <th>Publisher</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th></th>
+            <th>Tytuł</th>
+            <th>Kategoria</th>
+            <th>Wydawca</th>
+            <th>Cena</th>
+            <th>Stan magazynowy</th>
+            <th>Platforma</th>
+            <th>Akcje</th>
         </tr>
     </thead>
     <tbody>
@@ -26,14 +34,16 @@
                 <td>@game.Publisher?.Name</td>
                 <td>@game.Price.ToString("C")</td>
                 <td>@game.Stock</td>
+                <td>@game.GamePlatform</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@game.Id">Details</a> |
-                    <a asp-action="Edit" asp-route-id="@game.Id">Edit</a> |
-                    <a asp-action="Delete" asp-route-id="@game.Id">Delete</a>
+                    <a asp-action="Details" asp-route-id="@game.Id" class="btn btn-sm btn-info">Szczegóły</a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@game.Id" class="btn btn-sm btn-warning">Edytuj</a>
+                        <a asp-action="Delete" asp-route-id="@game.Id" class="btn btn-sm btn-danger">Usuń</a>
+                    }
                 </td>
             </tr>
         }
     </tbody>
 </table>
-
-<a class="btn btn-primary" asp-action="Create">Add New Game</a>

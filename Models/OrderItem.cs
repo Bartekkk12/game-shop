@@ -24,6 +24,6 @@ public class OrderItem
     public decimal Price { get; set; }
 
     // Navigation
-    public Game Game { get; set; } = null!;
-    public Order Order { get; set; } = default!;
+    public Game? Game { get; set; }
+    public Order? Order { get; set; }
 }

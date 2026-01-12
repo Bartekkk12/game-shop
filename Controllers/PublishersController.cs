@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 public class PublishersController : Controller
 {
@@ -39,6 +40,7 @@ public class PublishersController : Controller
     }
 
     // GET: Publishers/Create
+    [Authorize(Roles = "Admin")]
     public IActionResult Create()
     {
         return View();
@@ -47,6 +49,7 @@ public class PublishersController : Controller
     // POST: Publishers/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create(Publisher publisher)
     {
         if (ModelState.IsValid)
@@ -60,6 +63,7 @@ public class PublishersController : Controller
     }
 
     // GET: Publishers/Edit/5
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
@@ -79,6 +83,7 @@ public class PublishersController : Controller
     // POST: Publishers/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Edit(int id, Publisher publisher)
     {
         if (id != publisher.Id)
@@ -111,7 +116,7 @@ public class PublishersController : Controller
         return View(publisher);
     }
 
-    // GET: Publishers/Delete/5
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
@@ -133,6 +138,7 @@ public class PublishersController : Controller
     // POST: Publishers/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var publisher = await _context.Publishers.FindAsync(id);

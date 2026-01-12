@@ -1,0 +1,115 @@
+@model Order
+
+@{
+    ViewData["Title"] = "Szczegóły zamówienia";
+}
+
+<h2>Szczegóły zamówienia #@Model.Id</h2>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h4>Informacje o zamówieniu</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">ID zamówienia:</dt>
+            <dd class="col-sm-9">@Model.Id</dd>
+
+            <dt class="col-sm-3">Użytkownik:</dt>
+            <dd class="col-sm-9">@(Model.User?.Email ?? Model.UserId ?? "Gość")</dd>
+
+            <dt class="col-sm-3">Data zamówienia:</dt>
+            <dd class="col-sm-9">@Model.OrderDate.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+
+            <dt class="col-sm-3">Status:</dt>
+            <dd class="col-sm-9">
+                <span class="badge bg-@GetStatusBadgeColor(Model.status)">
+                    @GetStatusDisplayName(Model.status)
+                </span>
+            </dd>
+
+            <dt class="col-sm-3">Wartość całkowita:</dt>
+            <dd class="col-sm-9">
+                <strong>@Model.OrderItems.Sum(oi => oi.Price * oi.Quantity).ToString("C")</strong>
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h4>Pozycje zamówienia</h4>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Gra</th>
+                    <th>Kategoria</th>
+                    <th>Wydawca</th>
+                    <th>Cena jednostkowa</th>
+                    <th>Ilość</th>
+                    <th>Wartość</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderItems)
+                {
+                    <tr>
+                        <td>@item.Game.Title</td>
+                        <td>@item.Game.Category?.Name</td>
+                        <td>@item.Game.Publisher?.Name</td>
+                        <td>@item.Price.ToString("C")</td>
+                        <td>@item.Quantity</td>
+                        <td>@((item.Price * item.Quantity).ToString("C"))</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="5" class="text-end">SUMA:</th>
+                    <th>@Model.OrderItems.Sum(oi => oi.Price * oi.Quantity).ToString("C")</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<div class="mt-3">
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edytuj status</a>
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Usuń</a>
+    }
+    <a asp-action="Index" class="btn btn-secondary">Powrót do listy</a>
+</div>
+
+@functions {
+    string GetStatusBadgeColor(Order.Status status)
+    {
+        return status switch
+        {
+            Order.Status.New => "secondary",
+            Order.Status.PaymentReceived => "info",
+            Order.Status.PaymentSuceeded => "success",
+            Order.Status.PaymentRejected => "danger",
+            Order.Status.InProgress => "warning",
+            Order.Status.Sent => "primary",
+            _ => "secondary"
+        };
+    }
+
+    string GetStatusDisplayName(Order.Status status)
+    {
+        return status switch
+        {
+            Order.Status.New => "Nowe",
+            Order.Status.PaymentReceived => "Otrzymano płatność",
+            Order.Status.PaymentSuceeded => "Płatność zakończona",
+            Order.Status.PaymentRejected => "Płatność odrzucona",
+            Order.Status.InProgress => "W trakcie",
+            Order.Status.Sent => "Wysłane",
+            _ => status.ToString()
+        };
+    }
+}

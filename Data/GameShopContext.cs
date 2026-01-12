@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using GameShop.Models;
 
-public class GameShopContext : DbContext
+public class GameShopContext : IdentityDbContext<User>
 {
     public GameShopContext(DbContextOptions<GameShopContext> options) : base(options) { }
 
