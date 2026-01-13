@@ -23,6 +23,7 @@ public class Order
 
     public enum Status
     {
+        Cart,
         New,
         PaymentReceived,
         PaymentSuceeded,

@@ -17,7 +17,7 @@
             <th>Użytkownik</th>
             <th>Data zamówienia</th>
             <th>Status</th>
-            <th>Liczba pozycji</th>
+            <th>Liczba sztuk</th>
             <th>Wartość całkowita</th>
             <th>Akcje</th>
         </tr>
@@ -34,8 +34,8 @@
                         @GetStatusDisplayName(order.status)
                     </span>
                 </td>
-                <td>@order.OrderItems.Count</td>
-                <td>@order.OrderItems.Sum(oi => oi.Price * oi.Quantity).ToString("C")</td>
+                <td>@order.OrderItems.Sum(oi => oi.Quantity)</td>
+                <td>@order.OrderItems.Sum(oi => oi.Price * oi.Quantity).ToString("N2") zł</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-info">Szczegóły</a>
                     @if (User.IsInRole("Admin"))
@@ -54,6 +54,7 @@
     {
         return status switch
         {
+            Order.Status.Cart => "dark",
             Order.Status.New => "secondary",
             Order.Status.PaymentReceived => "info",
             Order.Status.PaymentSuceeded => "success",
@@ -68,6 +69,7 @@
     {
         return status switch
         {
+            Order.Status.Cart => "Koszyk",
             Order.Status.New => "Nowe",
             Order.Status.PaymentReceived => "Otrzymano płatność",
             Order.Status.PaymentSuceeded => "Płatność zakończona",

@@ -6,6 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
+/// <summary>
+/// Kontroler zarządzający zamówieniami
+/// Obsługuje tworzenie, przeglądanie i edycję zamówień oraz szybki zakup
+/// </summary>
 public class OrdersController : Controller
 {
     private readonly GameShopContext _context;
@@ -16,12 +20,14 @@ public class OrdersController : Controller
     }
 
     // GET: Orders
+    // Lista zamówień (bez koszykow) - użytkownicy widzą tylko swoje, Admin widzi wszystkie
     public async Task<IActionResult> Index()
     {
         IQueryable<Order> ordersQuery = _context.Orders
             .Include(o => o.OrderItems)
             .ThenInclude(oi => oi.Game)
-            .Include(o => o.User);
+            .Include(o => o.User)
+            .Where(o => o.status != Order.Status.Cart); // Wykluczamy koszyki
 
         if (User.IsInRole("User") && !User.IsInRole("Admin"))
         {
@@ -35,6 +41,7 @@ public class OrdersController : Controller
     }
 
     // GET: Orders/Details/<id>
+    // Szczegóły zamówienia z listą produktów i sumą
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -70,6 +77,7 @@ public class OrdersController : Controller
     }
 
     // GET: Orders/Create
+    // Formularz tworzenia zamówienia z wieloma grami
     [Authorize]
     public IActionResult Create()
     {
@@ -84,6 +92,7 @@ public class OrdersController : Controller
     }
 
     // POST: Orders/Create
+    // Tworzy zamówienie z wybranymi grami i zmniejsza stan magazynowy
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize]
@@ -127,6 +136,10 @@ public class OrdersController : Controller
                 };
 
                 _context.OrderItems.Add(orderItem);
+                
+                // Zmniejsz stan magazynowy
+                game.Stock -= quantities[i];
+                _context.Games.Update(game);
             }
         }
 
@@ -220,6 +233,70 @@ public class OrdersController : Controller
         }
 
         return RedirectToAction(nameof(Index));
+    }
+
+    // POST: Orders/BuyNow/<gameId>
+    // Szybki zakup - natychmiast tworzy zamówienie dla wybranej gry bez koszyka
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize]
+    public async Task<IActionResult> BuyNow(int gameId, int quantity = 1)
+    {
+        var game = await _context.Games.FindAsync(gameId);
+        
+        if (game == null)
+        {
+            return NotFound();
+        }
+
+        if (game.Stock <= 0)
+        {
+            TempData["ErrorMessage"] = "Ta gra nie jest dostępna w magazynie";
+            return RedirectToAction("Details", "Games", new { id = gameId });
+        }
+
+        if (quantity < 1)
+        {
+            TempData["ErrorMessage"] = "Ilość musi być większa niż 0";
+            return RedirectToAction("Details", "Games", new { id = gameId });
+        }
+
+        if (quantity > game.Stock)
+        {
+            TempData["ErrorMessage"] = $"Dostępne tylko {game.Stock} szt.";
+            return RedirectToAction("Details", "Games", new { id = gameId });
+        }
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var order = new Order
+        {
+            UserId = userId,
+            OrderDate = DateTime.Now,
+            status = Order.Status.New
+        };
+
+        _context.Orders.Add(order);
+        await _context.SaveChangesAsync();
+
+        var orderItem = new OrderItem
+        {
+            OrderId = order.Id,
+            GameId = gameId,
+            Quantity = quantity,
+            Price = game.Price
+        };
+
+        _context.OrderItems.Add(orderItem);
+        
+        // Zmniejsz stan magazynowy
+        game.Stock -= quantity;
+        _context.Games.Update(game);
+        
+        await _context.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = "Zamówienie zostało utworzone!";
+        return RedirectToAction("Details", new { id = order.Id });
     }
 
     private bool OrderExists(int id)

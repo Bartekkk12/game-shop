@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 
+/// <summary>
+/// Kontroler zarządzający wydawcami gier (CRUD)
+/// Tylko administratorzy mogą dodawać, edytować i usuwać wydawców
+/// </summary>
 public class PublishersController : Controller
 {
     private readonly GameShopContext _context;
@@ -14,6 +18,7 @@ public class PublishersController : Controller
     }
 
     // GET: Publishers
+    // Lista wszystkich wydawców
     public async Task<IActionResult> Index()
     {
         var publishers = await _context.Publishers.ToListAsync();
@@ -21,6 +26,7 @@ public class PublishersController : Controller
     }
 
     // GET: Publishers/Details/<id>
+    // Szczegóły wybranego wydawcy
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -40,6 +46,7 @@ public class PublishersController : Controller
     }
 
     // GET: Publishers/Create
+    // Formularz dodawania nowego wydawcy (tylko Admin)
     [Authorize(Roles = "Admin")]
     public IActionResult Create()
     {
@@ -47,6 +54,7 @@ public class PublishersController : Controller
     }
 
     // POST: Publishers/Create
+    // Zapisuje nowego wydawcę w bazie danych
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin")]

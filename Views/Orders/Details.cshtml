@@ -30,7 +30,7 @@
 
             <dt class="col-sm-3">Wartość całkowita:</dt>
             <dd class="col-sm-9">
-                <strong>@Model.OrderItems.Sum(oi => oi.Price * oi.Quantity).ToString("C")</strong>
+                <strong>@Model.OrderItems.Sum(oi => oi.Price * oi.Quantity).ToString("N2") zł</strong>
             </dd>
         </dl>
     </div>
@@ -59,16 +59,16 @@
                         <td>@item.Game.Title</td>
                         <td>@item.Game.Category?.Name</td>
                         <td>@item.Game.Publisher?.Name</td>
-                        <td>@item.Price.ToString("C")</td>
+                        <td>@item.Price.ToString("N2") zł</td>
                         <td>@item.Quantity</td>
-                        <td>@((item.Price * item.Quantity).ToString("C"))</td>
+                        <td>@((item.Price * item.Quantity).ToString("N2")) zł</td>
                     </tr>
                 }
             </tbody>
             <tfoot>
                 <tr>
                     <th colspan="5" class="text-end">SUMA:</th>
-                    <th>@Model.OrderItems.Sum(oi => oi.Price * oi.Quantity).ToString("C")</th>
+                    <th>@Model.OrderItems.Sum(oi => oi.Price * oi.Quantity).ToString("N2") zł</th>
                 </tr>
             </tfoot>
         </table>
@@ -89,6 +89,7 @@
     {
         return status switch
         {
+            Order.Status.Cart => "dark",
             Order.Status.New => "secondary",
             Order.Status.PaymentReceived => "info",
             Order.Status.PaymentSuceeded => "success",
@@ -103,6 +104,7 @@
     {
         return status switch
         {
+            Order.Status.Cart => "Koszyk",
             Order.Status.New => "Nowe",
             Order.Status.PaymentReceived => "Otrzymano płatność",
             Order.Status.PaymentSuceeded => "Płatność zakończona",

@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace GameShop.Controllers
 {
+    /// <summary>
+    /// Kontroler obsługujący rejestrację, logowanie i wylogowanie użytkowników
+    /// </summary>
     public class AccountController : Controller
     {
         private readonly UserManager<User> _userManager;
@@ -17,6 +20,7 @@ namespace GameShop.Controllers
         }
 
         // GET: Account/Register
+        // Wyświetla formularz rejestracji nowego użytkownika
         [HttpGet]
         public IActionResult Register()
         {
@@ -24,6 +28,7 @@ namespace GameShop.Controllers
         }
 
         // POST: Account/Register
+        // Tworzy nowe konto użytkownika i automatycznie loguje
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
@@ -59,6 +64,7 @@ namespace GameShop.Controllers
         }
 
         // GET: Account/Login
+        // Wyświetla formularz logowania z opcjonalnym przekierowaniem
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
         {
@@ -67,6 +73,7 @@ namespace GameShop.Controllers
         }
 
         // POST: Account/Login
+        // Uwierzytelnia użytkownika i tworzy sesję
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)

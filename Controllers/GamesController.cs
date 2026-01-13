@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 
+/// <summary>
+/// Kontroler zarządzający katalogiem gier
+/// Obsługuje przeglądanie, dodawanie, edycję i usuwanie gier
+/// </summary>
 public class GamesController : Controller
 {
     private readonly GameShopContext _context;
@@ -16,6 +20,7 @@ public class GamesController : Controller
     }
 
     // GET: Games
+    // Katalog wszystkich gier z kategoriami i wydawcami
     public async Task<IActionResult> Index()
     {
         var games = await _context.Games
@@ -33,6 +38,7 @@ public class GamesController : Controller
     }
 
     // GET: Games/Details/<id>
+    // Szczegóły gry z przyciskami zakupu
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -54,6 +60,7 @@ public class GamesController : Controller
     }
 
     // GET: Games/Create
+    // Formularz dodawania nowej gry (tylko Admin)
     [Authorize(Roles = "Admin")]
     public IActionResult Create()
     {
@@ -63,6 +70,7 @@ public class GamesController : Controller
     }
 
     // POST: Games/Create
+    // Zapisuje nową grę w bazie danych
     [HttpPost]
     [Authorize(Roles = "Admin")]
     [ValidateAntiForgeryToken]

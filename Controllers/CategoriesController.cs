@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 
+/// <summary>
+/// Kontroler zarządzający kategoriami gier (CRUD)
+/// Tylko administratorzy mogą dodawać, edytować i usuwać kategorie
+/// </summary>
 public class CategoriesController : Controller
 {
     private readonly GameShopContext _context;
@@ -14,6 +18,7 @@ public class CategoriesController : Controller
     }
 
     // GET: Categories
+    // Lista wszystkich kategorii
     public async Task<IActionResult> Index()
     {
         var categories = await _context.Categories.ToListAsync();
@@ -26,6 +31,7 @@ public class CategoriesController : Controller
     }
 
     // GET: Categories/Details/<id>
+    // Szczegóły wybranej kategorii
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -45,6 +51,7 @@ public class CategoriesController : Controller
     }
 
     // GET: Categories/Create
+    // Formularz dodawania nowej kategorii (tylko Admin)
     [Authorize(Roles = "Admin")]
     public IActionResult Create()
     {
@@ -52,6 +59,7 @@ public class CategoriesController : Controller
     }
 
     // POST: Categories/Create
+    // Zapisuje nową kategorię w bazie danych
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin")]

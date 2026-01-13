@@ -1,6 +1,8 @@
 # 🎮 GameShop
 
-Aplikacja webowa do zarządzania sklepem z grami video zbudowana w ASP.NET Core 8.0 z Entity Framework Core i SQL Server.
+Aplikacja webowa do zarządzania sklepem z grami video zbudowana w ASP.NET Core 8.0 z Entity Framework Core i SQL Server. 
+
+Sklep oferuje pełną funkcjonalność e-commerce z koszykiem zakupowym, zarządzaniem stanem magazynowym i systemem zamówień.
 
 ---
 
@@ -10,6 +12,7 @@ Aplikacja webowa do zarządzania sklepem z grami video zbudowana w ASP.NET Core 
 game-shop/
 ├── Controllers/              # Kontrolery MVC
 │   ├── AccountController.cs      # Rejestracja, logowanie
+│   ├── CartController.cs         # Koszyk zakupowy
 │   ├── CategoriesController.cs   # Zarządzanie kategoriami (Admin)
 │   ├── GamesController.cs        # Zarządzanie grami
 │   ├── HomeController.cs         # Strona główna
@@ -19,8 +22,8 @@ game-shop/
 ├── Models/                   # Modele domenowe
 │   ├── Category.cs              # Kategorie gier
 │   ├── Game.cs                  # Gry
-│   ├── Order.cs                 # Zamówienia
-│   ├── OrderItem.cs             # Pozycje zamówienia
+│   ├── Order.cs                 # Zamówienia i Koszyk (status: Cart/New/etc.)
+│   ├── OrderItem.cs             # Pozycje zamówienia/koszyka
 │   ├── Platform.cs              # Enum platform (PlayStation, Xbox, NintendoSwitch)
 │   ├── Publisher.cs             # Wydawcy
 │   ├── User.cs                  # Użytkownicy (Identity)
@@ -35,7 +38,8 @@ game-shop/
 │   │   └── _Layout.cshtml       # Główny layout (nawigacja, stopka)
 │   ├── Home/
 │   │   └── Index.cshtml         # Strona główna
-│   ├── Games/                   # CRUD dla gier
+│   ├── Games/                   # CRUD dla gier + przyciski zakupu
+│   ├── Cart/                    # Koszyk zakupowy
 │   ├── Categories/              # CRUD dla kategorii (Admin)
 │   ├── Publishers/              # CRUD dla wydawców (Admin)
 │   ├── Orders/                  # Zarządzanie zamówieniami
@@ -60,8 +64,6 @@ game-shop/
 ├── docker-compose.yml        # Orchestracja (app + SQL Server)
 └── README.md                 # Ten plik
 ```
-
----
 
 ## 🛠 Technologie
 
@@ -109,17 +111,18 @@ AspNetUsers (Identity)          Categories               Publishers
 ├── Id (PK)                     ├── Price
 ├── UserId (FK)                 ├── ReleaseDate
 ├── OrderDate                   ├── Stock
-├── Status                      ├── CategoryId (FK)
-├── TotalAmount                 ├── PublisherId (FK)
-└── OrderItems (1:N)            ├── GamePlatform (Enum)
-          │                     └── OrderItems (1:N)
-          ▼
-     OrderItems
-├── Id (PK)
-├── OrderId (FK)
-├── GameId (FK)
-├── Quantity
-└── Price
+├── Status (Enum)               ├── CategoryId (FK)
+│   ├── Cart                    ├── PublisherId (FK)
+│   ├── New                     ├── GamePlatform (Enum)
+│   ├── PaymentReceived         └── OrderItems (1:N)
+│   ├── PaymentSucceeded                  │
+│   ├── PaymentRejected                   ▼
+│   ├── InProgress                   OrderItems
+│   └── Sent                    ├── Id (PK)
+└── OrderItems (1:N)            ├── OrderId (FK)
+                                ├── GameId (FK)
+                                ├── Quantity
+                                └── Price
 ```
 
 ### Tabele
@@ -139,16 +142,20 @@ AspNetUsers (Identity)          Categories               Publishers
 - Katalog gier
 - Relacje: Category (N:1), Publisher (N:1)
 - Pola: Title, Description, Price, ReleaseDate, Stock, GamePlatform
+- **Stock** - automatycznie zmniejszany po zakupie
 
 #### **Orders**
-- Zamówienia użytkowników
+- Zamówienia użytkowników **i koszyki zakupowe**
 - Relacje: User (N:1)
-- Pola: OrderDate, Status, TotalAmount
+- Pola: OrderDate, Status
+- **Status "Cart"** - koszyk użytkownika (nie finalne zamówienie)
+- **Status "New" i dalsze** - finalne zamówienia
 
 #### **OrderItems**
-- Pozycje zamówienia (lista gier w zamówieniu)
+- Pozycje zamówienia/koszyka (lista gier)
 - Relacje: Order (N:1), Game (N:1)
 - Pola: Quantity, Price
+- Używane zarówno dla koszyków jak i zamówień
 
 ### Migracje
 

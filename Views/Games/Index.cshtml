@@ -84,7 +84,7 @@
                     <span class="badge bg-info">@game.GamePlatform</span>
                 </div>
                 <p class="text-muted small mb-2">📚 @game.Publisher?.Name</p>
-                <div class="game-card-price">@game.Price.ToString("C")</div>
+                <div class="game-card-price">@game.Price.ToString("N2") zł</div>
                 <p class="game-card-stock mb-3">
                     @if(game.Stock > 0)
                     {
@@ -96,6 +96,24 @@
                     }
                 </p>
                 <div class="d-grid gap-2">
+                    @if(game.Stock > 0)
+                    {
+                        <form asp-controller="Cart" asp-action="AddToCart" asp-route-gameId="@game.Id" method="post">
+                            <div class="input-group input-group-sm mb-2">
+                                <span class="input-group-text">Ilość:</span>
+                                <input type="number" name="quantity" class="form-control" value="1" min="1" max="@game.Stock" style="max-width: 70px;" />
+                            </div>
+                            <button type="submit" class="btn btn-warning btn-sm w-100">🛒 Do koszyka</button>
+                        </form>
+                        <form asp-controller="Orders" asp-action="BuyNow" asp-route-gameId="@game.Id" method="post">
+                            <input type="hidden" name="quantity" value="1" />
+                            <button type="submit" class="btn btn-success btn-sm w-100">Kup teraz</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <button class="btn btn-secondary btn-sm" disabled>Brak w magazynie</button>
+                    }
                     <a asp-action="Details" asp-route-id="@game.Id" class="btn btn-primary btn-sm">
                         👁️ Szczegóły
                     </a>
@@ -136,7 +154,7 @@
                             <td><strong>@game.Title</strong></td>
                             <td><span class="badge bg-secondary">@game.Category?.Name</span></td>
                             <td>@game.Publisher?.Name</td>
-                            <td><strong class="text-primary">@game.Price.ToString("C")</strong></td>
+                            <td><strong class="text-primary">@game.Price.ToString("N2") zł</strong></td>
                             <td>
                                 @if(game.Stock > 0)
                                 {

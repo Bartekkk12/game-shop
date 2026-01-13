@@ -1,0 +1,118 @@
+@model Order
+
+@{
+    ViewData["Title"] = "Koszyk";
+}
+
+<h2>🛒 Twój koszyk</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (Model.OrderItems == null || !Model.OrderItems.Any())
+{
+    <div class="alert alert-info">
+        <h4>Koszyk jest pusty</h4>
+        <p>Dodaj gry do koszyka, aby kontynuować zakupy.</p>
+        <a asp-controller="Games" asp-action="Index" class="btn btn-primary">Przeglądaj gry</a>
+    </div>
+}
+else
+{
+    <div class="card mb-4">
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Gra</th>
+                        <th>Kategoria</th>
+                        <th>Wydawca</th>
+                        <th>Cena jednostkowa</th>
+                        <th>Ilość</th>
+                        <th>Wartość</th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderItems)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@item.Game.Title</strong>
+                                @if (item.Game.Stock < item.Quantity)
+                                {
+                                    <br />
+                                    <small class="text-danger">⚠️ Dostępne tylko @item.Game.Stock szt.</small>
+                                }
+                            </td>
+                            <td>@item.Game.Category?.Name</td>
+                            <td>@item.Game.Publisher?.Name</td>
+                            <td>@item.Game.Price.ToString("N2") zł</td>
+                            <td>
+                                <form asp-action="UpdateQuantity" method="post" style="display: inline;">
+                                    <input type="hidden" name="orderItemId" value="@item.Id" />
+                                    <div class="input-group input-group-sm" style="width: 120px;">
+                                        <input type="number" name="quantity" class="form-control" 
+                                               value="@item.Quantity" min="1" max="@item.Game.Stock" />
+                                        <button type="submit" class="btn btn-outline-secondary">✓</button>
+                                    </div>
+                                </form>
+                            </td>
+                            <td><strong>@((item.Game.Price * item.Quantity).ToString("N2")) zł</strong></td>
+                            <td>
+                                <form asp-action="RemoveItem" method="post" style="display: inline;">
+                                    <input type="hidden" name="orderItemId" value="@item.Id" />
+                                    <button type="submit" class="btn btn-danger btn-sm" 
+                                            onclick="return confirm('Usunąć ten produkt z koszyka?')">
+                                        🗑️ Usuń
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="5" class="text-end">SUMA:</th>
+                        <th>@Model.OrderItems.Sum(oi => oi.Game.Price * oi.Quantity).ToString("N2") zł</th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <div>
+            <a asp-controller="Games" asp-action="Index" class="btn btn-secondary">
+                ← Kontynuuj zakupy
+            </a>
+            <form asp-action="Clear" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-outline-danger" 
+                        onclick="return confirm('Wyczyścić cały koszyk?')">
+                    🗑️ Wyczyść koszyk
+                </button>
+            </form>
+        </div>
+        <div>
+            <form asp-action="Checkout" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-success btn-lg">
+                    ✅ Złóż zamówienie
+                </button>
+            </form>
+        </div>
+    </div>
+}

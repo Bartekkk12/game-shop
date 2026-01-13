@@ -50,6 +50,14 @@
                                 📦 Zamówienia
                             </a>
                         </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Cart" asp-action="Index">
+                                    🛒 Koszyk
+                                </a>
+                            </li>
+                        }
                     </ul>
                     <ul class="navbar-nav">
                         @if (User.Identity?.IsAuthenticated == true)
