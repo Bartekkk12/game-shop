@@ -43,7 +43,6 @@ namespace GameShop.Controllers
 
                 if (result.Succeeded)
                 {
-                    // Przypisz rolę User do nowego użytkownika
                     await _userManager.AddToRoleAsync(user, "User");
                     Console.WriteLine($"Użytkownik {user.Email} został zarejestrowany z rolą User");
                     await _signInManager.SignInAsync(user, isPersistent: false);

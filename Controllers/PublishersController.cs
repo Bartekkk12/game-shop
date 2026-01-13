@@ -20,7 +20,7 @@ public class PublishersController : Controller
         return View(publishers);
     }
 
-    // GET: Publishers/Details/5
+    // GET: Publishers/Details/<id>
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -62,7 +62,7 @@ public class PublishersController : Controller
         return View(publisher);
     }
 
-    // GET: Publishers/Edit/5
+    // GET: Publishers/Edit/<id>
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Edit(int? id)
     {
@@ -80,7 +80,7 @@ public class PublishersController : Controller
         return View(publisher);
     }
 
-    // POST: Publishers/Edit/5
+    // POST: Publishers/Edit/<id>
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin")]
@@ -116,6 +116,7 @@ public class PublishersController : Controller
         return View(publisher);
     }
 
+    // POST: Publishers/Delete/<id>
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int? id)
     {
@@ -135,8 +136,8 @@ public class PublishersController : Controller
         return View(publisher);
     }
 
-    // POST: Publishers/Delete/5
-    [HttpPost, ActionName("Delete")]
+    // POST: Publishers/Delete/<id>
+    [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteConfirmed(int id)

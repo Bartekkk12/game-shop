@@ -32,12 +32,12 @@ public class GamesController : Controller
         return View(games);
     }
 
-    // GET: Games/Details/5
+    // GET: Games/Details/<id>
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
         {
-            return NotFound(); // Brak ID - zwróć widok NotFound
+            return NotFound();
         }
 
         var game = await _context.Games
@@ -47,7 +47,7 @@ public class GamesController : Controller
 
         if (game == null)
         {
-            return NotFound(); // Gra nie została znaleziona
+            return NotFound();
         }
 
         return View(game);
@@ -68,7 +68,6 @@ public class GamesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Game game)
     {
-        // Usuń błędy walidacji dla właściwości nawigacyjnych
         ModelState.Remove("Category");
         ModelState.Remove("Publisher");
 
@@ -91,29 +90,28 @@ public class GamesController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    // GET: Games/Edit/<id>
     [Authorize(Roles = "Admin")]
-    // GET: Games/Edit/5
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
         {
-            return NotFound(); // Jeśli nie ma ID - zwróć NotFound
+            return NotFound();
         }
 
-        var game = await _context.Games.FindAsync(id); // Znalezienie gry
+        var game = await _context.Games.FindAsync(id);
         if (game == null)
         {
             return NotFound();
         }
 
-        // Załaduj dane dla pól rozwijanych
         ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", game.CategoryId);
         ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", game.PublisherId);
 
         return View(game);
     }
 
-    // POST: Games/Edit/5
+    // POST: Games/Edit/<id>
     [Authorize(Roles = "Admin")]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -121,10 +119,9 @@ public class GamesController : Controller
     {
         if (id != game.Id)
         {
-            return NotFound(); // ID dla gry się nie pokrywa
+            return NotFound();
         }
 
-        // Usuń błędy walidacji dla właściwości nawigacyjnych
         ModelState.Remove("Category");
         ModelState.Remove("Publisher");
 
@@ -133,38 +130,37 @@ public class GamesController : Controller
             try
             {
                 Console.WriteLine($"Aktualizacja gry: {game.Title}");
-                _context.Update(game); // Aktualizacja danych gry w bazie
-                await _context.SaveChangesAsync(); // Zapisz zmiany w bazie
+                _context.Update(game);
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!GameExists(game.Id))
                 {
-                    return NotFound(); // Gra już nie istnieje w bazie
+                    return NotFound();
                 }
                 else
                 {
-                    throw; // Rzuć wyjątek dalej
+                    throw;
                 }
             }
 
             return RedirectToAction(nameof(Index));
         }
 
-        // Jeśli walidacja ModelState się nie powiedzie, załaduj ponownie listy rozwijane
         ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", game.CategoryId);
         ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", game.PublisherId);
 
         return View(game);
     }
 [Authorize(Roles = "Admin")]
-    
-    // GET: Games/Delete/5
+
+    // GET: Games/Delete/<id>
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
         {
-            return NotFound(); // Brak ID gry
+            return NotFound();
         }
 
         var game = await _context.Games
@@ -174,23 +170,23 @@ public class GamesController : Controller
 
         if (game == null)
         {
-            return NotFound(); // Gra nie została znaleziona
+            return NotFound();
         }
 
         return View(game);
     }
 
+    // POST: Games/Delete/<id>
     [Authorize(Roles = "Admin")]
-    // POST: Games/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        var game = await _context.Games.FindAsync(id); // Pobieranie gry z bazy
+        var game = await _context.Games.FindAsync(id);
         if (game != null)
         {
-            _context.Games.Remove(game); // Usunięcie gry
-            await _context.SaveChangesAsync(); // Potwierdzenie usunięcia w bazie
+            _context.Games.Remove(game);
+            await _context.SaveChangesAsync();
             Console.WriteLine($"Gra o ID {id} została usunięta.");
         }
         return RedirectToAction(nameof(Index));
@@ -198,6 +194,6 @@ public class GamesController : Controller
 
     private bool GameExists(int id)
     {
-        return _context.Games.Any(e => e.Id == id); // Sprawdzenie istnienia gry
+        return _context.Games.Any(e => e.Id == id);
     }
 }

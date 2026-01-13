@@ -1,16 +1,6 @@
-# 🎮 GameShop - Sklep z Grami Video
+# 🎮 GameShop
 
 Aplikacja webowa do zarządzania sklepem z grami video zbudowana w ASP.NET Core 8.0 z Entity Framework Core i SQL Server.
-
-## 📋 Spis treści
-
-- [Struktura projektu](#-struktura-projektu)
-- [Technologie](#-technologie)
-- [Baza danych](#-baza-danych)
-- [Uruchamianie aplikacji](#-uruchamianie-aplikacji)
-- [Testy](#-testy)
-- [Funkcjonalności](#-funkcjonalności)
-- [Dane testowe](#-dane-testowe)
 
 ---
 
@@ -58,8 +48,8 @@ game-shop/
 │       └── site.js              # JavaScript (animacje, walidacja, filtry)
 │
 ├── GameShop.Tests/           # Projekt testowy
-│   ├── Models/                  # 55 testów jednostkowych
-│   └── Integration/             # 55 testów integracyjnych
+│   ├── Models/                  # Testy jednostkowe dla modeli
+│   └── Integration/             # Testy integracyjne dla kontrolerów
 │       ├── CustomWebApplicationFactory.cs
 │       └── Controllers/         # Testy kontrolerów
 │
@@ -176,10 +166,10 @@ Aplikacja używa `EnsureCreated()` zamiast migracji:
 
 ```powershell
 # 1. Uruchom aplikację + SQL Server
-docker-compose up -d
+docker-compose up --build
 
 # 2. Otwórz w przeglądarce
-start http://localhost:5000
+http://localhost:5000
 
 # 3. Zatrzymanie
 docker-compose down
@@ -202,7 +192,7 @@ docker-compose down
 # 2. Uruchom aplikację
 dotnet run
 
-# 3. Otwórz adres z konsoli (zazwyczaj https://localhost:5001)
+# 3. Otwórz adres z konsoli https://localhost:5000
 ```
 
 ### Metoda 3: Visual Studio
@@ -220,23 +210,23 @@ dotnet run
 ```
 GameShop.Tests/
 ├── Models/                    # 55 testów jednostkowych
-│   ├── GameTests.cs              # 10 testów
-│   ├── CategoryTests.cs          # 5 testów
-│   ├── PublisherTests.cs         # 5 testów
-│   ├── OrderTests.cs             # 10 testów
-│   ├── OrderItemTests.cs         # 10 testów
-│   ├── UserTests.cs              # 8 testów
-│   └── PlatformTests.cs          # 7 testów
+│   ├── GameTests.cs              
+│   ├── CategoryTests.cs          
+│   ├── PublisherTests.cs         
+│   ├── OrderTests.cs             
+│   ├── OrderItemTests.cs         
+│   ├── UserTests.cs              
+│   └── PlatformTests.cs          
 │
 └── Integration/               # 55 testów integracyjnych
     ├── CustomWebApplicationFactory.cs  # Infrastruktura testowa
     └── Controllers/
-        ├── HomeControllerTests.cs        # 5 testów
-        ├── CategoriesControllerTests.cs  # 10 testów
-        ├── PublishersControllerTests.cs  # 11 testów
-        ├── GamesControllerTests.cs       # 13 testów
-        ├── OrdersControllerTests.cs      # 7 testów
-        └── AccountControllerTests.cs     # 9 testów
+        ├── HomeControllerTests.cs        
+        ├── CategoriesControllerTests.cs  
+        ├── PublishersControllerTests.cs  
+        ├── GamesControllerTests.cs       
+        ├── OrdersControllerTests.cs      
+        └── AccountControllerTests.cs     
 ```
 
 ### Uruchamianie testów
@@ -246,7 +236,7 @@ GameShop.Tests/
 # Zbuduj obraz testowy
 docker build -f Dockerfile.tests -t gameshop-tests .
 
-# Uruchom wszystkie testy (110 testów)
+# Uruchom wszystkie testy
 docker run --rm gameshop-tests
 ```
 
@@ -292,89 +282,13 @@ Duration: ~1s
 
 ---
 
-## ✨ Funkcjonalności
-
-### Dla wszystkich użytkowników
-
-#### 🏠 Strona główna
-- Hero section z gradientem
-- Statystyki (500+ gier, 10k+ klientów)
-- Call-to-action z promocją 10%
-- Sekcja "Dlaczego my?"
-
-#### 🎯 Katalog gier
-- **2 widoki:** Kafelki (grid) / Lista (tabela)
-- **Wyszukiwanie:** Filtrowanie w czasie rzeczywistym
-- **Filtrowanie:** Według platformy (PlayStation, Xbox, Nintendo Switch)
-- **Sortowanie:** Nazwa, cena rosnąco/malejąco
-- Karty gier z ikonami platform
-- Informacje: cena, stan magazynowy, kategoria, wydawca
-
-#### 📦 Zamówienia
-- Przeglądanie własnych zamówień
-- Tworzenie nowych zamówień (wymaga logowania)
-- Szczegóły zamówienia (lista gier, ceny, suma)
-
-#### 🔐 Konto
-- Rejestracja nowego użytkownika
-- Logowanie/wylogowanie
-- Role: Admin, User
-
-### Tylko dla Administratorów
-
-#### 🎮 Zarządzanie grami (CRUD)
-- Dodawanie nowych gier
-- Edycja gier (tytuł, opis, cena, stock, platforma)
-- Usuwanie gier
-- Przypisywanie kategorii i wydawców
-
-#### 📁 Zarządzanie kategoriami (CRUD)
-- Widoczne tylko w menu dla adminów
-- Dodawanie/edycja/usuwanie kategorii
-
-#### 🏢 Zarządzanie wydawcami (CRUD)
-- Widoczne tylko w menu dla adminów
-- Dodawanie/edycja/usuwanie wydawców
-
----
-
-## 🎨 Frontend Features
-
-### CSS
-- Gradientowa nawigacja (fioletowo-różowa)
-- Animacje fade-in i slide-up
-- Hover effects na kartach i przyciskach
-- Responsywny design (mobile-first)
-- Custom scrollbar
-- CSS Variables dla łatwej zmiany kolorów
-
-### JavaScript
-- Animacje przy wczytywaniu strony
-- Real-time walidacja formularzy
-- Wyszukiwanie/filtrowanie w czasie rzeczywistym
-- Auto-ukrywanie alertów (5s)
-- Konfirmacja przed usunięciem
-- Smooth scroll
-- Lazy loading obrazów
-
-### Kolorystyka
-```css
---primary-color: #6366f1;      /* Fiolet */
---secondary-color: #ec4899;    /* Różowy */
---success-color: #10b981;      /* Zielony */
---warning-color: #f59e0b;      /* Pomarańczowy */
---danger-color: #ef4444;       /* Czerwony */
-```
-
----
-
 ## 👤 Dane testowe
 
 Aplikacja automatycznie tworzy konta testowe przy pierwszym uruchomieniu:
 
 ### Konto Administratora
 ```
-Email:    admin@test.com
+Email:    admin@gameshop.com
 Hasło:    Admin123!
 Rola:     Admin
 ```
@@ -387,7 +301,7 @@ Rola:     Admin
 
 ### Konto Użytkownika
 ```
-Email:    user@test.com
+Email:    user@gameshop.com
 Hasło:    User123!
 Rola:     User
 ```
@@ -403,13 +317,13 @@ Rola:     User
 
 ### Connection String (docker-compose.yml)
 ```yaml
-ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=GameShopDB;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;"
+ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=GameShopDB;User Id=sa;Password=StrongPassword123!;TrustServerCertificate=True;"
 ```
 
 ### SQL Server (docker-compose.yml)
 ```yaml
 Environment:
-  - SA_PASSWORD=YourStrong@Passw0rd
+  - SA_PASSWORD=StrongPassword123!
   - ACCEPT_EULA=Y
 Port: 1433
 ```
@@ -422,125 +336,12 @@ Depends on: sqlserver (healthy)
 
 ---
 
-## 📝 Komendy Docker
+## 👨‍💻 Autorzy
 
-```powershell
-# Uruchomienie
-docker-compose up -d
+Projekt stworzony jako aplikacja edukacyjna.  
+Powstał w ramach projektu studenckiego przez:
+- Bartosz Piróg
+- Karol Mach
+- Tymoteusz Łach
 
-# Rebuild po zmianach
-docker-compose up --build -d
 
-# Logi aplikacji
-docker-compose logs webapp
-
-# Logi SQL Server
-docker-compose logs sqlserver
-
-# Status kontenerów
-docker-compose ps
-
-# Zatrzymanie
-docker-compose down
-
-# Zatrzymanie + usunięcie wolumenów (czyści bazę)
-docker-compose down -v
-```
-
----
-
-## 🐛 Rozwiązywanie problemów
-
-### Aplikacja nie startuje
-```powershell
-# Sprawdź logi
-docker-compose logs webapp
-
-# Sprawdź czy SQL Server jest healthy
-docker-compose ps
-```
-
-### Błąd połączenia z bazą
-```powershell
-# Restart SQL Server
-docker-compose restart sqlserver
-
-# Sprawdź czy port 1433 nie jest zajęty
-netstat -ano | findstr 1433
-```
-
-### Brak danych w bazie
-```powershell
-# Usuń wolumeny i uruchom ponownie
-docker-compose down -v
-docker-compose up -d
-```
-
-### CSS/JS się nie ładuje
-```powershell
-# Hard refresh w przeglądarce
-Ctrl + F5
-
-# Wyczyść cache przeglądarki
-Ctrl + Shift + Delete
-```
-
-### Testy nie przechodzą
-```powershell
-# Sprawdź czy używasz .NET 8.0
-dotnet --version
-
-# Przywróć pakiety
-dotnet restore GameShop.Tests/GameShop.Tests.csproj
-
-# Rebuild projektu testowego
-dotnet build GameShop.Tests/GameShop.Tests.csproj
-```
-
----
-
-## 📊 Metryki projektu
-
-```
-Kontrolery:     6
-Modele:         7
-Widoki:         ~40
-Testy:          110 (55 jednostkowe + 55 integracyjne)
-Linie kodu:     ~3000
-CSS:            ~500 linii
-JavaScript:     ~250 linii
-Pokrycie:       100% testów przechodzi
-```
-
----
-
-## 🚀 Roadmap / Możliwe rozszerzenia
-
-- [ ] Koszyk zakupowy (sesja/cookies)
-- [ ] System płatności (Stripe/PayPal)
-- [ ] Oceny i recenzje gier (★★★★★)
-- [ ] Wishlist (lista życzeń)
-- [ ] Galeria zdjęć gier
-- [ ] Porównywarka gier
-- [ ] Dark mode
-- [ ] Powiadomienia email
-- [ ] Eksport zamówień do PDF
-- [ ] Panel analityki dla admina
-- [ ] API REST dla aplikacji mobilnej
-- [ ] Integracja z systemem płatności
-
----
-
-## 📄 Licencja
-
-© 2026 GameShop. Wszystkie prawa zastrzeżone.
-
----
-
-## 👨‍💻 Autor
-
-Projekt stworzony jako aplikacja demonstracyjna e-commerce w ASP.NET Core.
-
----
-
-**Pytania? Problemy?** Sprawdź sekcję [Rozwiązywanie problemów](#-rozwiązywanie-problemów) lub otwórz issue na GitHub.

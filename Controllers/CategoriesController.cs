@@ -25,7 +25,7 @@ public class CategoriesController : Controller
         return View(categories);
     }
 
-    // GET: Categories/Details/5
+    // GET: Categories/Details/<id>
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -33,11 +33,10 @@ public class CategoriesController : Controller
             return NotFound();
         }
 
-        // Wyszukanie kategorii po id
         var category = await _context.Categories
             .FirstOrDefaultAsync(m => m.Id == id);
 
-        if (category == null) // Nie znaleziono kategorii
+        if (category == null)
         {
             return NotFound();
         }
@@ -62,14 +61,13 @@ public class CategoriesController : Controller
         {
             Console.WriteLine($"Dodawanie kategorii: {category.Name}");
 
-            _context.Add(category); // Dodanie obiektu do kontekstu
-            await _context.SaveChangesAsync(); // Zapisanie zmian do bazy danych
+            _context.Add(category);
+            await _context.SaveChangesAsync();
             Console.WriteLine("Kategoria została dodana do bazy danych.");
 
-            return RedirectToAction(nameof(Index)); // Przekierowanie na stronę główną
+            return RedirectToAction(nameof(Index));
         }
 
-        // Diagnostic - Wyświetlenie wszystkich błędów walidacji:
         foreach (var state in ModelState)
         {
             Console.WriteLine($"Pole: {state.Key}");
@@ -80,10 +78,10 @@ public class CategoriesController : Controller
         }
 
         Console.WriteLine("ModelState jest niepoprawny. Kategoria NIE została zapisana.");
-        return View(category); // Wróć na stronę utworzenia
+        return View(category);
     }
 
-    // GET: Categories/Edit/5
+    // GET: Categories/Edit/<id>
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Edit(int? id)
     {
@@ -92,7 +90,6 @@ public class CategoriesController : Controller
             return NotFound();
         }
 
-        // Wyszukanie kategorii po id
         var category = await _context.Categories.FindAsync(id);
         if (category == null)
         {
@@ -102,7 +99,7 @@ public class CategoriesController : Controller
         return View(category);
     }
 
-    // POST: Categories/Edit/5
+    // POST: Categories/Edit/<id>
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin")]
@@ -137,20 +134,19 @@ public class CategoriesController : Controller
         return View(category);
     }
 
-    // GET: Categories/Delete/5
+    // GET: Categories/Delete/<id>
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int? id)
     {
-        if (id == null) // Brak id dla zapytania usunięcia
+        if (id == null)
         {
             return NotFound();
         }
 
-        // Pobranie kategorii dla potwierdzenia usunięcia
         var category = await _context.Categories
             .FirstOrDefaultAsync(m => m.Id == id);
 
-        if (category == null) // Kategoria nie istnieje
+        if (category == null)
         {
             return NotFound();
         }
@@ -158,22 +154,21 @@ public class CategoriesController : Controller
         return View(category);
     }
 
-    // POST: Categories/Delete/5
+    // POST: Categories/Delete/<id>
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        var category = await _context.Categories.FindAsync(id); // Wyszukanie encji
+        var category = await _context.Categories.FindAsync(id);
         if (category != null)
         {
-            _context.Categories.Remove(category); // Usunięcie z bazy
+            _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
         }
         return RedirectToAction(nameof(Index));
     }
 
-    // Sprawdzanie istnienia kategorii
     private bool CategoryExists(int id)
     {
         return _context.Categories.Any(e => e.Id == id);

@@ -9,10 +9,8 @@ namespace GameShop.Tests.Models
         [Fact]
         public void Game_ShouldInitialize_WithDefaultValues()
         {
-            // Arrange & Act
             var game = new Game();
 
-            // Assert
             game.Id.Should().Be(0);
             game.Title.Should().BeNull();
             game.Description.Should().BeNull();
@@ -27,7 +25,6 @@ namespace GameShop.Tests.Models
         [Fact]
         public void Game_ShouldSetProperties_Correctly()
         {
-            // Arrange
             var releaseDate = new DateTime(2024, 1, 15);
             var game = new Game
             {
@@ -42,7 +39,6 @@ namespace GameShop.Tests.Models
                 GamePlatform = Platform.PlayStation
             };
 
-            // Assert
             game.Id.Should().Be(1);
             game.Title.Should().Be("Test Game");
             game.Description.Should().Be("Test Description");
@@ -57,7 +53,6 @@ namespace GameShop.Tests.Models
         [Fact]
         public void Game_ShouldHaveNavigationProperties()
         {
-            // Arrange
             var category = new Category { Id = 1, Name = "Action" };
             var publisher = new Publisher { Id = 1, Name = "Test Publisher" };
             var game = new Game
@@ -66,7 +61,6 @@ namespace GameShop.Tests.Models
                 Publisher = publisher
             };
 
-            // Assert
             game.Category.Should().NotBeNull();
             game.Category.Should().Be(category);
             game.Publisher.Should().NotBeNull();
@@ -79,20 +73,16 @@ namespace GameShop.Tests.Models
         [InlineData(Platform.NintendoSwitch)]
         public void Game_ShouldAccept_AllPlatformValues(Platform platform)
         {
-            // Arrange
             var game = new Game { GamePlatform = platform };
 
-            // Assert
             game.GamePlatform.Should().Be(platform);
         }
 
         [Fact]
         public void Game_Price_ShouldSupportDecimalPrecision()
         {
-            // Arrange
             var game = new Game { Price = 59.99m };
 
-            // Assert
             game.Price.Should().Be(59.99m);
         }
 
@@ -103,10 +93,8 @@ namespace GameShop.Tests.Models
         [InlineData(1000)]
         public void Game_Stock_ShouldAcceptNonNegativeValues(int stock)
         {
-            // Arrange
             var game = new Game { Stock = stock };
 
-            // Assert
             game.Stock.Should().Be(stock);
         }
     }

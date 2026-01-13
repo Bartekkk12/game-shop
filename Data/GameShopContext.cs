@@ -12,3 +12,4 @@ public class GameShopContext : IdentityDbContext<User>
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<Publisher> Publishers { get; set; }
 }
+

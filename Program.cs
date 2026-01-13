@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using GameShop.Data; // Importujemy przestrzeń nazw dla SeedData
 using GameShop.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// **Add services to the container**
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<GameShopContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), sqlOptions =>
@@ -16,7 +17,7 @@ builder.Services.AddDbContext<GameShopContext>(options =>
             errorNumbersToAdd: null);
     }));
 
-// Add Identity
+// **Add Identity**
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
     // Password settings
@@ -35,7 +36,7 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 .AddEntityFrameworkStores<GameShopContext>()
 .AddDefaultTokenProviders();
 
-// Configure cookie settings
+// **Configure cookie settings**
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
@@ -45,13 +46,14 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.SlidingExpiration = true;
 });
 
+// **Add Data Protection**
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(@"/app/DataProtection-Keys"))
     .SetDefaultKeyLifetime(TimeSpan.FromDays(14));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// **Configure the HTTP request pipeline**
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -65,26 +67,38 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Inicjalizuj bazę danych tylko gdy nie jesteśmy w środowisku testowym
+// **Inicjalizuj bazę danych i dokonaj seedowania tylko gdy nie jesteśmy w środowisku Test**
 if (!app.Environment.IsEnvironment("Testing"))
 {
     using (var scope = app.Services.CreateScope())
     {
-        var db = scope.ServiceProvider.GetRequiredService<GameShopContext>();
-        
-        // Usuń bazę danych jeśli istnieje i utwórz na nowo z tabelami Identity
-        db.Database.EnsureDeleted();
-        db.Database.EnsureCreated();
-        
-        Console.WriteLine("Baza danych została utworzona z tabelami Identity");
-        
-        // Inicjalizuj role i admina
-        await SeedData.Initialize(scope.ServiceProvider);
+        var services = scope.ServiceProvider;
+
+        try
+        {
+            // Pobieramy kontekst bazy danych i stosujemy migracje
+            var db = services.GetRequiredService<GameShopContext>();
+            db.Database.Migrate();
+
+            Console.WriteLine("Zastosowano wszystkie migracje dla bazy danych.");
+
+            // Wywołanie metody SeedData.Initialize do wypełnienia bazy danych
+            await SeedData.Initialize(services);
+
+            Console.WriteLine("Dane zostały zainicjalizowane (role, admin, gry, wydawcy itp.)");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Błąd podczas inicjalizacji bazy danych: {ex.Message}");
+        }
     }
 }
 
-app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
-// Make the implicit Program class public so test projects can access it
+
+// **Make the implicit Program class public so test projects can access it**
 public partial class Program { }

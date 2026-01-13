@@ -23,7 +23,6 @@ public class OrdersController : Controller
             .ThenInclude(oi => oi.Game)
             .Include(o => o.User);
 
-        // Jeśli nie jest adminem, pokaż tylko jego zamówienia
         if (User.IsInRole("User") && !User.IsInRole("Admin"))
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -35,7 +34,7 @@ public class OrdersController : Controller
         return View(orders);
     }
 
-    // GET: Orders/Details/5
+    // GET: Orders/Details/<id>
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -58,7 +57,6 @@ public class OrdersController : Controller
             return NotFound();
         }
 
-        // Sprawdź czy użytkownik ma prawo zobaczyć to zamówienie
         if (!User.IsInRole("Admin"))
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -138,7 +136,7 @@ public class OrdersController : Controller
         return RedirectToAction(nameof(Details), new { id = order.Id });
     }
 
-    // GET: Orders/Edit/5
+    // GET: Orders/Edit/<id>
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Edit(int? id)
     {
@@ -160,7 +158,7 @@ public class OrdersController : Controller
         return View(order);
     }
 
-    // POST: Orders/Edit/5
+    // POST: Orders/Edit/<id>
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin")]
@@ -181,7 +179,7 @@ public class OrdersController : Controller
         return RedirectToAction(nameof(Details), new { id = id });
     }
 
-    // GET: Orders/Delete/5
+    // GET: Orders/Delete/<id>
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int? id)
     {
@@ -203,7 +201,7 @@ public class OrdersController : Controller
         return View(order);
     }
 
-    // POST: Orders/Delete/5
+    // POST: Orders/Delete/<id>
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin")]

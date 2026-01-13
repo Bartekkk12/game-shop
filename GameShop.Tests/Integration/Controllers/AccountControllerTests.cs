@@ -23,21 +23,17 @@ namespace GameShop.Tests.Integration.Controllers
         [Fact]
         public async Task Register_Get_ReturnsSuccessStatusCode()
         {
-            // Act
             var response = await _client.GetAsync("/Account/Register");
 
-            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [Fact]
         public async Task Register_Get_ReturnsRegisterForm()
         {
-            // Act
             var response = await _client.GetAsync("/Account/Register");
             var content = await response.Content.ReadAsStringAsync();
 
-            // Assert
             content.Should().Contain("Register");
             content.Should().Contain("Email");
             content.Should().Contain("Password");
@@ -48,21 +44,17 @@ namespace GameShop.Tests.Integration.Controllers
         [Fact]
         public async Task Login_Get_ReturnsSuccessStatusCode()
         {
-            // Act
             var response = await _client.GetAsync("/Account/Login");
 
-            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [Fact]
         public async Task Login_Get_ReturnsLoginForm()
         {
-            // Act
             var response = await _client.GetAsync("/Account/Login");
             var content = await response.Content.ReadAsStringAsync();
 
-            // Assert
             content.Should().Contain("Login");
             content.Should().Contain("Email");
             content.Should().Contain("Password");
@@ -71,19 +63,16 @@ namespace GameShop.Tests.Integration.Controllers
         [Fact]
         public async Task Login_Get_WithReturnUrl_IncludesReturnUrl()
         {
-            // Act
             var response = await _client.GetAsync("/Account/Login?returnUrl=%2FGames");
             var content = await response.Content.ReadAsStringAsync();
 
-            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            content.Should().Contain("/Games"); // returnUrl jest przekazywany w formularzu
+            content.Should().Contain("/Games");
         }
 
         [Fact]
         public async Task Login_Post_WithInvalidCredentials_ReturnsError()
         {
-            // Arrange
             var loginPage = await _client.GetAsync("/Account/Login");
             var loginContent = await loginPage.Content.ReadAsStringAsync();
             var token = ExtractAntiForgeryToken(loginContent);
@@ -97,11 +86,9 @@ namespace GameShop.Tests.Integration.Controllers
             };
             var content = new FormUrlEncodedContent(formData);
 
-            // Act
             var response = await _client.PostAsync("/Account/Login", content);
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             responseContent.Should().Contain("Login");
         }
@@ -109,7 +96,6 @@ namespace GameShop.Tests.Integration.Controllers
         [Fact]
         public async Task Register_Post_WithoutAntiForgeryToken_ReturnsBadRequest()
         {
-            // Arrange
             var formData = new Dictionary<string, string>
             {
                 { "Email", "newuser@test.com" },
@@ -120,32 +106,26 @@ namespace GameShop.Tests.Integration.Controllers
             };
             var content = new FormUrlEncodedContent(formData);
 
-            // Act
             var response = await _client.PostAsync("/Account/Register", content);
 
-            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [Fact]
         public async Task AccessDenied_ReturnsSuccessStatusCode()
         {
-            // Act
             var response = await _client.GetAsync("/Account/AccessDenied");
 
-            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [Fact]
         public async Task AccessDenied_DisplaysAccessDeniedMessage()
         {
-            // Act
             var response = await _client.GetAsync("/Account/AccessDenied");
             var content = await response.Content.ReadAsStringAsync();
 
-            // Assert
-            content.Should().Contain("zabroniony"); // część z "Dostęp zabroniony"
+            content.Should().Contain("zabroniony");
         }
 
         private string ExtractAntiForgeryToken(string htmlContent)
