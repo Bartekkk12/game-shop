@@ -1,0 +1,18 @@
+# Dockerfile dla testów jednostkowych
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
+WORKDIR /src
+
+# Kopiowanie plików projektu
+COPY ["GameShop.csproj", "./"]
+COPY ["GameShop.Tests/GameShop.Tests.csproj", "GameShop.Tests/"]
+
+# Przywracanie zależności
+RUN dotnet restore "GameShop.Tests/GameShop.Tests.csproj"
+
+# Kopiowanie reszty plików
+COPY . .
+
+# Uruchomienie testów
+WORKDIR "/src/GameShop.Tests"
+ENTRYPOINT ["dotnet", "test", "--logger:trx", "--results-directory", "/testresults"]

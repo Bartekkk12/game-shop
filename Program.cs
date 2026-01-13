@@ -65,20 +65,26 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-using (var scope = app.Services.CreateScope())
+// Inicjalizuj bazę danych tylko gdy nie jesteśmy w środowisku testowym
+if (!app.Environment.IsEnvironment("Testing"))
 {
-    var db = scope.ServiceProvider.GetRequiredService<GameShopContext>();
-    
-    // Usuń bazę danych jeśli istnieje i utwórz na nowo z tabelami Identity
-    db.Database.EnsureDeleted();
-    db.Database.EnsureCreated();
-    
-    Console.WriteLine("Baza danych została utworzona z tabelami Identity");
-    
-    // Inicjalizuj role i admina
-    await SeedData.Initialize(scope.ServiceProvider);
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<GameShopContext>();
+        
+        // Usuń bazę danych jeśli istnieje i utwórz na nowo z tabelami Identity
+        db.Database.EnsureDeleted();
+        db.Database.EnsureCreated();
+        
+        Console.WriteLine("Baza danych została utworzona z tabelami Identity");
+        
+        // Inicjalizuj role i admina
+        await SeedData.Initialize(scope.ServiceProvider);
+    }
 }
 
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+// Make the implicit Program class public so test projects can access it
+public partial class Program { }

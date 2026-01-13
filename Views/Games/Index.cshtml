@@ -1,49 +1,242 @@
 ﻿@model IEnumerable<Game>
 
 @{
-    ViewData["Title"] = "Games";
+    ViewData["Title"] = "Gry";
 }
 
-<h2>Gry</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>🎯 Katalog Gier</h1>
+        <p class="text-muted">Przeglądaj naszą kolekcję gier i znajdź coś dla siebie</p>
+    </div>
+    @if (User.IsInRole("Admin"))
+    {
+        <a class="btn btn-success btn-lg" asp-action="Create">
+            ➕ Dodaj nową grę
+        </a>
+    }
+</div>
 
-@if (User.IsInRole("Admin"))
-{
-    <p>
-        <a class="btn btn-primary" asp-action="Create">Dodaj nową grę</a>
-    </p>
-}
+<!-- Widok siatki (Grid) -->
+<div class="mb-4">
+    <div class="btn-group" role="group" aria-label="View switcher">
+        <button type="button" class="btn btn-outline-primary active" onclick="switchView('grid')">
+            📱 Kafelki
+        </button>
+        <button type="button" class="btn btn-outline-primary" onclick="switchView('list')">
+            📋 Lista
+        </button>
+    </div>
+</div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Tytuł</th>
-            <th>Kategoria</th>
-            <th>Wydawca</th>
-            <th>Cena</th>
-            <th>Stan magazynowy</th>
-            <th>Platforma</th>
-            <th>Akcje</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var game in Model)
-        {
-            <tr>
-                <td>@game.Title</td>
-                <td>@game.Category?.Name</td>
-                <td>@game.Publisher?.Name</td>
-                <td>@game.Price.ToString("C")</td>
-                <td>@game.Stock</td>
-                <td>@game.GamePlatform</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@game.Id" class="btn btn-sm btn-info">Szczegóły</a>
+<!-- Wyszukiwanie i filtrowanie -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <input type="text" id="searchInput" class="form-control" placeholder="🔍 Szukaj gry..." onkeyup="filterGames()">
+            </div>
+            <div class="col-md-3">
+                <select id="platformFilter" class="form-select" onchange="filterGames()">
+                    <option value="">Wszystkie platformy</option>
+                    <option value="PlayStation">PlayStation</option>
+                    <option value="Xbox">Xbox</option>
+                    <option value="NintendoSwitch">Nintendo Switch</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select id="sortBy" class="form-select" onchange="filterGames()">
+                    <option value="title">Sortuj: Nazwa</option>
+                    <option value="price-asc">Sortuj: Cena rosnąco</option>
+                    <option value="price-desc">Sortuj: Cena malejąco</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Widok Grid (domyślny) -->
+<div id="gridView" class="game-grid">
+    @foreach (var game in Model)
+    {
+        <div class="game-card" data-title="@game.Title.ToLower()" data-platform="@game.GamePlatform" data-price="@game.Price">
+            <div class="game-card-image">
+                @switch(game.GamePlatform)
+                {
+                    case GameShop.Models.Platform.PlayStation:
+                        <span>🎮</span>
+                        break;
+                    case GameShop.Models.Platform.Xbox:
+                        <span>🎯</span>
+                        break;
+                    case GameShop.Models.Platform.NintendoSwitch:
+                        <span>🎨</span>
+                        break;
+                    default:
+                        <span>🕹️</span>
+                        break;
+                }
+            </div>
+            <div class="game-card-body">
+                <h5 class="game-card-title">@game.Title</h5>
+                <div class="mb-2">
+                    <span class="badge bg-secondary">@game.Category?.Name</span>
+                    <span class="badge bg-info">@game.GamePlatform</span>
+                </div>
+                <p class="text-muted small mb-2">📚 @game.Publisher?.Name</p>
+                <div class="game-card-price">@game.Price.ToString("C")</div>
+                <p class="game-card-stock mb-3">
+                    @if(game.Stock > 0)
+                    {
+                        <span class="text-success">✅ Dostępne: @game.Stock szt.</span>
+                    }
+                    else
+                    {
+                        <span class="text-danger">❌ Brak w magazynie</span>
+                    }
+                </p>
+                <div class="d-grid gap-2">
+                    <a asp-action="Details" asp-route-id="@game.Id" class="btn btn-primary btn-sm">
+                        👁️ Szczegóły
+                    </a>
                     @if (User.IsInRole("Admin"))
                     {
-                        <a asp-action="Edit" asp-route-id="@game.Id" class="btn btn-sm btn-warning">Edytuj</a>
-                        <a asp-action="Delete" asp-route-id="@game.Id" class="btn btn-sm btn-danger">Usuń</a>
+                        <div class="btn-group btn-group-sm">
+                            <a asp-action="Edit" asp-route-id="@game.Id" class="btn btn-warning">✏️ Edytuj</a>
+                            <a asp-action="Delete" asp-route-id="@game.Id" class="btn btn-danger" 
+                               onclick="return confirmDelete('@game.Title')">🗑️ Usuń</a>
+                        </div>
                     }
-                </td>
-            </tr>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Widok Lista (ukryty) -->
+<div id="listView" style="display: none;">
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0" id="gamesTable">
+                <thead>
+                    <tr>
+                        <th>Tytuł</th>
+                        <th>Kategoria</th>
+                        <th>Wydawca</th>
+                        <th>Cena</th>
+                        <th>Stan</th>
+                        <th>Platforma</th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var game in Model)
+                    {
+                        <tr data-title="@game.Title.ToLower()" data-platform="@game.GamePlatform" data-price="@game.Price">
+                            <td><strong>@game.Title</strong></td>
+                            <td><span class="badge bg-secondary">@game.Category?.Name</span></td>
+                            <td>@game.Publisher?.Name</td>
+                            <td><strong class="text-primary">@game.Price.ToString("C")</strong></td>
+                            <td>
+                                @if(game.Stock > 0)
+                                {
+                                    <span class="badge bg-success">@game.Stock szt.</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Brak</span>
+                                }
+                            </td>
+                            <td><span class="badge bg-info">@game.GamePlatform</span></td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a asp-action="Details" asp-route-id="@game.Id" class="btn btn-info" title="Szczegóły">👁️</a>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@game.Id" class="btn btn-warning" title="Edytuj">✏️</a>
+                                        <a asp-action="Delete" asp-route-id="@game.Id" class="btn btn-danger" 
+                                           onclick="return confirmDelete('@game.Title')" title="Usuń">🗑️</a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info text-center py-5">
+        <h3>😔 Nie znaleziono żadnych gier</h3>
+        <p>Sprawdź później lub zmień kryteria wyszukiwania</p>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function switchView(viewType) {
+            const gridView = document.getElementById('gridView');
+            const listView = document.getElementById('listView');
+            const buttons = document.querySelectorAll('.btn-group button');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            if (viewType === 'grid') {
+                gridView.style.display = 'grid';
+                listView.style.display = 'none';
+                buttons[0].classList.add('active');
+            } else {
+                gridView.style.display = 'none';
+                listView.style.display = 'block';
+                buttons[1].classList.add('active');
+            }
         }
-    </tbody>
-</table>
+
+        function filterGames() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const platformFilter = document.getElementById('platformFilter').value;
+            const sortBy = document.getElementById('sortBy').value;
+            
+            // Pobierz wszystkie gry (z obu widoków)
+            const gameCards = Array.from(document.querySelectorAll('.game-card'));
+            const tableRows = Array.from(document.querySelectorAll('#gamesTable tbody tr'));
+            
+            // Filtruj i sortuj karty
+            filterAndSort(gameCards, searchText, platformFilter, sortBy);
+            filterAndSort(tableRows, searchText, platformFilter, sortBy);
+        }
+
+        function filterAndSort(items, searchText, platformFilter, sortBy) {
+            items.forEach(item => {
+                const title = item.getAttribute('data-title') || '';
+                const platform = item.getAttribute('data-platform') || '';
+                const price = parseFloat(item.getAttribute('data-price')) || 0;
+                
+                const matchesSearch = title.includes(searchText);
+                const matchesPlatform = !platformFilter || platform === platformFilter;
+                
+                item.style.display = (matchesSearch && matchesPlatform) ? '' : 'none';
+            });
+
+            // Sortowanie
+            const visibleItems = items.filter(item => item.style.display !== 'none');
+            const parent = items[0]?.parentElement;
+            
+            if (sortBy === 'price-asc') {
+                visibleItems.sort((a, b) => parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price')));
+            } else if (sortBy === 'price-desc') {
+                visibleItems.sort((a, b) => parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute('data-price')));
+            } else {
+                visibleItems.sort((a, b) => a.getAttribute('data-title').localeCompare(b.getAttribute('data-title')));
+            }
+            
+            // Przepisz posortowane elementy
+            if (parent) {
+                visibleItems.forEach(item => parent.appendChild(item));
+            }
+        }
+    </script>
+}

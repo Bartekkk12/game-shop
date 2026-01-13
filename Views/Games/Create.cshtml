@@ -1,7 +1,7 @@
 ﻿@model Game
 
 @{
-    ViewData["Title"] = "Create Game";
+    ViewData["Title"] = "Dodaj nową grę";
 }
 
 @{
@@ -12,65 +12,99 @@
     var publishers = (SelectList)ViewData["PublisherId"];
 }
 
-<h2>Create a new game</h2>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="mb-0" style="color: white;">🎮 Dodaj nową grę</h2>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" style="margin-bottom: 100px;">
+                    <div class="form-group">
+                        <label asp-for="Title" class="form-label">Tytuł gry</label>
+                        <input asp-for="Title" class="form-control" placeholder="Wprowadź tytuł gry" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
 
-<form asp-action="Create">
-    <div class="form-group">
-        <label asp-for="Title" class="form-label"></label>
-        <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
+                    <div class="form-group">
+                        <label asp-for="Description" class="form-label">Opis</label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Opisz grę..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="Category" class="form-label">Kategoria</label>
+                                <select asp-for="CategoryId" class="form-select" asp-items="categories">
+                                    <option value="">-- Wybierz kategorię --</option>
+                                </select>
+                                <span asp-validation-for="CategoryId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="Publisher" class="form-label">Wydawca</label>
+                                <select asp-for="PublisherId" class="form-select" asp-items="publishers">
+                                    <option value="">-- Wybierz wydawcę --</option>
+                                </select>
+                                <span asp-validation-for="PublisherId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Price" class="form-label">Cena (PLN)</label>
+                                <input asp-for="Price" class="form-control" type="number" step="0.01" placeholder="0.00" />
+                                <span asp-validation-for="Price" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="ReleaseDate" class="form-label">Data wydania</label>
+                                <input asp-for="ReleaseDate" class="form-control" type="date" />
+                                <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="Stock" class="form-label">Stan magazynowy</label>
+                                <input asp-for="Stock" class="form-control" type="number" placeholder="0" />
+                                <span asp-validation-for="Stock" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="GamePlatform" class="form-label">Platforma</label>
+                        <select asp-for="GamePlatform" class="form-select">
+                            <option value="">-- Wybierz platformę --</option>
+                            @foreach (var platform in Enum.GetValues(typeof(Platform)))
+                            {
+                                <option value="@platform">@platform</option>
+                            }
+                        </select>
+                        <span asp-validation-for="GamePlatform" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end" style="margin-top: 2rem; margin-bottom: 3rem;">
+                        <a asp-action="Index" class="btn btn-secondary btn-lg px-5">
+                            ❌ Anuluj
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                            ✅ Zapisz grę
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-
-    <div class="form-group">
-        <label asp-for="Description" class="form-label"></label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Category" class="form-label"></label>
-        <select asp-for="CategoryId" class="form-control" asp-items="categories"></select>
-        <span asp-validation-for="CategoryId" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Publisher" class="form-label"></label>
-        <select asp-for="PublisherId" class="form-control" asp-items="publishers"></select>
-        <span asp-validation-for="PublisherId" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Price" class="form-label"></label>
-        <input asp-for="Price" class="form-control" type="number" step="0.01" />
-        <span asp-validation-for="Price" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="ReleaseDate" class="form-label"></label>
-        <input asp-for="ReleaseDate" class="form-control" type="date" />
-        <span asp-validation-for="ReleaseDate" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Stock" class="form-label"></label>
-        <input asp-for="Stock" class="form-control" type="number" />
-        <span asp-validation-for="Stock" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="GamePlatform" class="form-label"></label>
-        <select asp-for="GamePlatform" class="form-control">
-            <option value="">Select platform</option>
-            @foreach (var platform in Enum.GetValues(typeof(Platform)))
-            {
-                <option value="@platform">@platform</option>
-            }
-        </select>
-        <span asp-validation-for="GamePlatform" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Save</button>
-</form>
+</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

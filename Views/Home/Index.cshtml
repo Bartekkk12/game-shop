@@ -1,8 +1,126 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Strona główna";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="hero-section text-center py-5 mb-5" style="background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%); border-radius: 16px; color: white;">
+    <div class="container">
+        <h1 class="display-3 fw-bold mb-3" style="-webkit-text-fill-color: white; background: none;">🎮 Witaj w GameShop!</h1>
+        <p class="lead mb-4">Odkryj najlepsze gry w najlepszych cenach. Setki tytułów czeka na Ciebie!</p>
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a asp-controller="Games" asp-action="Index" class="btn btn-light btn-lg px-5">
+                Przeglądaj gry
+            </a>
+            @if (User?.Identity?.IsAuthenticated != true)
+            {
+                <a asp-controller="Account" asp-action="Register" class="btn btn-outline-light btn-lg px-5">
+                    Dołącz teraz
+                </a>
+            }
+        </div>
+    </div>
 </div>
+
+<div class="container">
+    <!-- Statystyki -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3 col-sm-6">
+            <div class="card text-center border-0 h-100">
+                <div class="card-body">
+                    <div class="display-4 mb-3">🎯</div>
+                    <h3 class="card-title">500+</h3>
+                    <p class="card-text text-muted">Gier w ofercie</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card text-center border-0 h-100">
+                <div class="card-body">
+                    <div class="display-4 mb-3">👥</div>
+                    <h3 class="card-title">10k+</h3>
+                    <p class="card-text text-muted">Zadowolonych klientów</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card text-center border-0 h-100">
+                <div class="card-body">
+                    <div class="display-4 mb-3">⚡</div>
+                    <h3 class="card-title">24/7</h3>
+                    <p class="card-text text-muted">Wsparcie online</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card text-center border-0 h-100">
+                <div class="card-body">
+                    <div class="display-4 mb-3">🚀</div>
+                    <h3 class="card-title">Instant</h3>
+                    <p class="card-text text-muted">Natychmiastowa dostawa</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <section class="mb-5">
+        <div class="card border-0" style="background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);">
+            <div class="card-body text-center text-white py-5">
+                <h2 class="display-5 fw-bold mb-3">Dołącz do społeczności GameShop!</h2>
+                <p class="lead mb-4">Zarejestruj się już dziś i otrzymaj 10% zniżki na pierwsze zakupy</p>
+                @if (User?.Identity?.IsAuthenticated != true)
+                {
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-light btn-lg px-5">
+                        Załóż darmowe konto
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Games" asp-action="Index" class="btn btn-light btn-lg px-5">
+                        Rozpocznij zakupy
+                    </a>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- Dlaczego my? -->
+    <section class="mb-5">
+        <h2 class="text-center mb-5">✨ Dlaczego warto wybrać GameShop?</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="display-4 mb-3">💳</div>
+                    <h5>Bezpieczne płatności</h5>
+                    <p class="text-muted">Twoje dane są chronione najnowszymi zabezpieczeniami</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="display-4 mb-3">🎁</div>
+                    <h5>Regularne promocje</h5>
+                    <p class="text-muted">Codziennie nowe okazje i ekskluzywne oferty</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="display-4 mb-3">📱</div>
+                    <h5>Wszędzie dostępne</h5>
+                    <p class="text-muted">Kupuj gry z komputera, tabletu lub smartfona</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        // Animacja liczników
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.classList.add('slide-up');
+            });
+        });
+    </script>
+}
