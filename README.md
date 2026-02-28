@@ -1,4 +1,4 @@
-# 🎮 GameShop
+# GameShop
 
 Aplikacja webowa do zarządzania sklepem z grami video zbudowana w ASP.NET Core 8.0 z Entity Framework Core i SQL Server. 
 
@@ -6,7 +6,7 @@ Sklep oferuje pełną funkcjonalność e-commerce z koszykiem zakupowym, zarząd
 
 ---
 
-## 📁 Struktura projektu
+## Struktura projektu
 
 ```
 game-shop/
@@ -65,7 +65,7 @@ game-shop/
 └── README.md                 # Ten plik
 ```
 
-## 🛠 Technologie
+## Technologie
 
 ### Backend
 - **ASP.NET Core 8.0** - Framework webowy
@@ -92,7 +92,7 @@ game-shop/
 
 ---
 
-## 🗄 Baza danych
+## Baza danych
 
 ### Schemat bazy danych
 
@@ -165,9 +165,9 @@ Aplikacja używa `EnsureCreated()` zamiast migracji:
 
 ---
 
-## 🚀 Uruchamianie aplikacji
+## Uruchamianie aplikacji
 
-### Metoda 1: Docker Compose (Zalecana) ✅
+### Metoda 1: Docker Compose (Zalecana)
 
 **Wymagania:** Docker Desktop
 
@@ -205,12 +205,12 @@ dotnet run
 ### Metoda 3: Visual Studio
 
 1. Otwórz `GameShop.sln`
-2. Naciśnij `F5` lub kliknij ▶️
+2. Naciśnij `F5`
 3. Aplikacja otworzy się w przeglądarce
 
 ---
 
-## 🧪 Testy
+## Testy
 
 ### Struktura testów
 
@@ -238,7 +238,7 @@ GameShop.Tests/
 
 ### Uruchamianie testów
 
-#### Docker (Zalecane) ✅
+#### Docker (Zalecane)
 ```powershell
 # Zbuduj obraz testowy
 docker build -f Dockerfile.tests -t gameshop-tests .
@@ -265,10 +265,10 @@ dotnet test --verbosity detailed
 ### Wyniki testów
 
 ```
-✅ Testy jednostkowe:  55/55 (100%)
-✅ Testy integracyjne: 55/55 (100%)
+Testy jednostkowe:  55/55 (100%)
+Testy integracyjne: 55/55 (100%)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ ŁĄCZNIE:           110/110 (100%)
+ŁĄCZNIE:           110/110 (100%)
 
 Duration: ~1s
 ```
@@ -289,7 +289,7 @@ Duration: ~1s
 
 ---
 
-## 👤 Dane testowe
+## Dane testowe
 
 Aplikacja automatycznie tworzy konta testowe przy pierwszym uruchomieniu:
 
@@ -320,7 +320,7 @@ Rola:     User
 
 ---
 
-## 🔧 Konfiguracja
+## Konfiguracja
 
 ### Connection String (docker-compose.yml)
 ```yaml
@@ -343,7 +343,7 @@ Depends on: sqlserver (healthy)
 
 ---
 
-## 👨‍💻 Autorzy
+## Autorzy
 
 Projekt stworzony jako aplikacja edukacyjna.  
 Powstał w ramach projektu studenckiego przez:
